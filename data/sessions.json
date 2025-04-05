@@ -8,8 +8,29 @@
     },
     "a123_2025-04-05_60": {
         "name": "a123",
-        "project": "myProject",
+        "project": "Filoures",
         "duration": 60,
+        "date": "2025-04-05",
+        "element_type": "session"
+    },
+    "a123_2025-04-05_-60": {
+        "name": "a123",
+        "project": "Filoures",
+        "duration": -60,
+        "date": "2025-04-05",
+        "element_type": "session"
+    },
+    "a123_2025-04-05_-110": {
+        "name": "a123",
+        "project": "Filoures",
+        "duration": -110,
+        "date": "2025-04-05",
+        "element_type": "session"
+    },
+    "a123_2025-04-05_160": {
+        "name": "a123",
+        "project": "Filoures",
+        "duration": 160,
         "date": "2025-04-05",
         "element_type": "session"
     }

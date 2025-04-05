@@ -3,6 +3,7 @@ from rich import print
 from rich.prompt import Prompt
 from rich.table import Table
 from rich.console import Console
+from rich import progress_bar
 from modules.base import *
 from datetime import datetime
 import json
@@ -35,15 +36,16 @@ def add(name, duration, status, force, time_done):
         "name": name,
         "time_done": time_done,
         "duration": duration,
-        "status": status
+        "status": status,
+        "sessions": []
     }
-    save_to_json("./data/projects.json", name, "project", project_data, overwrite=force)
+    add_to_json("./data/projects.json", name, "project", project_data, overwrite=force)
 
 @project.command()
 @click.option("--status", "-s", type=click.Choice(["active", "inactive"]))
 def list(status):
     """List projects."""
-    projects = json_fetch("./data/projects.json", "project")
+    projects = read_json("./data/projects.json")
     if not projects: return print(f"[red]No projects found.[/red]")
     
     if status:
@@ -57,15 +59,13 @@ def list(status):
     table.add_column("Duration", justify="right", style="green")
     table.add_column("Time Done", justify="right", style="green")
     table.add_column("Status", justify="center", style="yellow")
-    table.add_column("Element Type", justify="center", style="blue")
     for project_id, project in projects.items():
         table.add_row(
             #project_id,
             project["name"],
             str(project["duration"]),
             str(project["time_done"]),
-            project["status"],
-            project["element_type"]
+            project["status"]
         )
     console = Console()
     console.print(table)
@@ -92,8 +92,43 @@ def delete(force, names : tuple):
     else:
         json_delete("./data/projects.json", names, force=force)
 
+@project.command()
+@click.option("--force", "-f", default=False)
+def purge(force):
+    """Purge all projects."""
+    input = Prompt.ask(
+        "[yellow]Warning: You are about to delete all projects.\nDo you want to proceed (y/N)?[/yellow]",
+        choices=["y", "n"],
+        default="n", show_default=False, show_choices=False
+    )
+    if input == "n":
+        print("[red]Operation cancelled.[/red]")
+        return
+    save_json("./data/projects.json", {})
 
 
+@project.command()
+def progress():
+    """Show project progress."""
+    projects = read_json("./data/projects.json")
+    if not projects: return print(f"[red]No projects found.[/red]")
+    
+    # Create a table to display the projects
+    table = Table(title="Project Progress")
+    #table.add_column("ID", justify="left", style="cyan")
+    table.add_column("Name", justify="left", style="magenta")
+    table.add_column("Progress", justify="left", style="green")
+    table.add_column("Total duration", justify="left", style="green")
+    for project_id, project in projects.items():
+        progress = (project["time_done"] / project["duration"]) * 100 if project["duration"] > 0 else 0
+        table.add_row(
+            #project_id,
+            project["name"],
+            progress_bar(project["duration"], project["time_done"]),
+            str(project["duration"]),
+        )
+    console = Console()
+    console.print(table)
 #############################################
 #            SESSSION FUNCTIONS             #
 #############################################
@@ -124,10 +159,25 @@ def add(project, name, duration, date):
         "duration": duration,
         "date": date,
     }
-    add_out = add_session_to_project(session_id, project, element_type="session")
-    
+    add_success = add_to_project(session_id, project, duration, element_type = "session")
+    if add_success == True:
+        add_to_json("./data/sessions.json", session_id, "session", session_data)
 
 
+@session.command()
+@click.argument('project', type=click.STRING)
+@click.option("--force", "-f", default=False)
+def purge(project, force):
+    """Purge all sessions."""
+    input = Prompt.ask(
+        "[yellow]Warning: You are about to delete all sessions.\nDo you want to proceed (y/N)?[/yellow]",
+        choices=["y", "n"],
+        default="n", show_default=False, show_choices=False
+    )
+    if input == "n":
+        print("[red]Operation cancelled.[/red]")
+        return
+    delete_project_content(project, element_type="session")
 
 if __name__ == "__main__":
     cli()
