@@ -1,0 +1,16 @@
+{
+    "sess1": {
+        "name": "sess1",
+        "project": "proj1",
+        "duration": 0,
+        "date": "2025-04-02",
+        "element_type": "session"
+    },
+    "a123_2025-04-05_60": {
+        "name": "a123",
+        "project": "myProject",
+        "duration": 60,
+        "date": "2025-04-05",
+        "element_type": "session"
+    }
+}

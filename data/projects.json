@@ -1,0 +1,18 @@
+{
+    "mySession0": {
+        "name": "myProject0",
+        "time_done": 50,
+        "duration": 0,
+        "status": "inactive",
+        "element_type": "project",
+        "sessions":[]
+    },
+    "Filoures": {
+        "name": "Filoures",
+        "time_done": 50,
+        "duration": 100,
+        "status": "active",
+        "element_type": "project",
+        "sessions":[]
+    }
+}
